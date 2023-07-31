@@ -19,8 +19,12 @@ parseMessage str = case words str of
 parse :: String -> [LogMessage]
 parse str = map parseMessage (lines str)
 
+-- Can be re-written to exclude the third pattern match, but experimenting
+-- in early stages
 insert :: LogMessage -> MessageTree -> MessageTree
-insert (Unknown _) Leaf = Leaf
-insert (Unknown _) (Node {}) = Node {}
-insert LogMessage Leaf = 
-insert LogMessage (Node MessageTree LogMessage MessageTree) = 
+insert lm@LogMessage {} Leaf = Node Leaf lm Leaf
+insert lm@(LogMessage _ time1 _) (Node left lm2@(LogMessage _ time2 _) right)
+    | time1 > time2 = Node left lm2 (insert lm right)
+    | time1 < time2 = Node (insert lm left) lm2 left
+    | otherwise = Node (insert lm left) lm left
+insert _ tree  = tree
