@@ -28,3 +28,7 @@ insert lm@(LogMessage _ time1 _) (Node left lm2@(LogMessage _ time2 _) right)
     | time1 < time2 = Node (insert lm left) lm2 left
     | otherwise = Node (insert lm left) lm left
 insert _ tree  = tree
+
+build :: [LogMessage] -> MessageTree
+build [] = Leaf
+build ls = foldr insert Leaf ls
