@@ -36,3 +36,11 @@ testWhatWentWrong :: (String -> [LogMessage])
                   -> IO [String]
 testWhatWentWrong parse whatWentWrong file
   = whatWentWrong . parse <$> readFile file
+
+testInOrder :: (String -> [LogMessage])
+            -> ([LogMessage] -> MessageTree)
+            -> (MessageTree -> [LogMessage])
+            -> FilePath
+            -> IO [LogMessage]
+testInOrder parse build inOrder file 
+  = inOrder . build . parse <$> readFile file
