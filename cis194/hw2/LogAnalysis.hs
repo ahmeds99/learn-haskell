@@ -25,14 +25,24 @@ insert :: LogMessage -> MessageTree -> MessageTree
 insert lm@LogMessage {} Leaf = Node Leaf lm Leaf
 insert lm@(LogMessage _ time1 _) (Node left lm2@(LogMessage _ time2 _) right)
     | time1 > time2 = Node left lm2 (insert lm right)
-    | time1 < time2 = Node (insert lm left) lm2 left
-    | otherwise = Node (insert lm left) lm left
+    | time1 < time2 = Node (insert lm left) lm2 right
+    | otherwise = Node (insert lm left) lm2 right
 insert _ tree  = tree
 
 build :: [LogMessage] -> MessageTree
-build [] = Leaf
-build ls = foldr insert Leaf ls
+build  = foldr insert Leaf
 
 inOrder :: MessageTree -> [LogMessage]
 inOrder Leaf = []
 inOrder (Node left lm right) = inOrder left ++ [lm] ++ inOrder right
+
+over50Error :: LogMessage -> Bool
+over50Error (LogMessage (Error sev) _ _)  | sev > 50 = True
+over50Error _ = False
+
+logMessageToString :: LogMessage -> String
+logMessageToString (LogMessage (Error _) _ str) = str
+logMessageToString _ = ""
+
+whatWentWrong :: [LogMessage] -> [String]
+whatWentWrong ls =  map logMessageToString (filter over50Error (inOrder (build ls)))
