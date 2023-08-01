@@ -32,3 +32,7 @@ insert _ tree  = tree
 build :: [LogMessage] -> MessageTree
 build [] = Leaf
 build ls = foldr insert Leaf ls
+
+inOrder :: MessageTree -> [LogMessage]
+inOrder Leaf = []
+inOrder (Node left lm right) = inOrder left ++ [lm] ++ inOrder right
