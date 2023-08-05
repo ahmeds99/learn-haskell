@@ -21,3 +21,11 @@ toIndexTuple = zip[1..]
 skips :: [a] -> [[a]]
 skips [] = []
 skips xs = map nthElement (toIndexTuple (map (duplicateFirst xs) xs))
+
+
+-- Ex. 2: Local Maxima
+localMaxima :: [Integer] -> [Integer]
+localMaxima (x:rest@(y:z:_))
+    | y > x && y > z    = y : localMaxima rest
+    | otherwise         = localMaxima rest
+localMaxima _ = []
