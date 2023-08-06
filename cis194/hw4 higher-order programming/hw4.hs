@@ -76,3 +76,9 @@ map' f = foldr (\x xs -> f x : xs) []
 -- From https://wiki.haskell.org/Foldl_as_foldr
 myFoldl :: (a -> b -> a) -> a -> [b] -> a
 myFoldl f base xs = foldr (\b g x -> g (f x b)) id xs base
+
+-- Ex. 4: finding primes
+cartProd :: [a] -> [b] -> [(a, b)]
+cartProd xs ys = [(x,y) | x <- xs, y <- ys]
+
+-- sieveSundaram :: Int -> [Integer]
