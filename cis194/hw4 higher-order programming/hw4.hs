@@ -60,3 +60,14 @@ showTree n@(Node i _ _ _) = go i n
   go i (Node _ l c r) = go (i-1) l ++ 
     replicate (4*fromIntegral i) ' ' ++ show c ++ "\n" ++ go (i-1) r 
 
+-- Ex. 3: more folds
+-- 1. xor
+
+xor :: [Bool] -> Bool
+xor = foldl (/=) False
+
+-- 2. Map as a fold 
+map' :: (a -> b) -> [a] -> [b]
+-- Handle the : (head and rest of list) by applying f to the head, and append the rest of the list to head
+-- Handles the empty case of a list simply as an empty list, as map f [] == []
+map' f = foldr (\x xs -> f x : xs) []
