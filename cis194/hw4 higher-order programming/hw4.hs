@@ -71,3 +71,8 @@ map' :: (a -> b) -> [a] -> [b]
 -- Handle the : (head and rest of list) by applying f to the head, and append the rest of the list to head
 -- Handles the empty case of a list simply as an empty list, as map f [] == []
 map' f = foldr (\x xs -> f x : xs) []
+
+-- 3. Implement foldl using foldr
+-- From https://wiki.haskell.org/Foldl_as_foldr
+myFoldl :: (a -> b -> a) -> a -> [b] -> a
+myFoldl f base xs = foldr (\b g x -> g (f x b)) id xs base
