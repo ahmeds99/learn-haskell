@@ -16,6 +16,7 @@ eval (Mul a b) = eval a * eval b
 evalStr :: String -> Maybe Integer
 evalStr s = eval <$> parseExp Lit Add Mul s
 
+-- Ex. 3
 class Expr a where
     lit :: Integer -> a
     add :: a -> a -> a
@@ -28,3 +29,44 @@ instance Expr ExprT where
 
 reify :: ExprT -> ExprT
 reify = id
+
+-- Ex. 4
+instance Expr Integer where
+    lit a = a
+    add a b = a + b
+    mul a b = a * b
+
+instance Expr Bool where
+    lit b = b > 0
+    add a b = a || b
+    mul a b = a && b
+
+-- From the course page
+newtype MinMax = MinMax Integer deriving (Eq, Show)
+newtype Mod7 = Mod7 Integer deriving (Eq, Show)
+
+instance Expr MinMax where
+    lit = MinMax
+    add (MinMax a) (MinMax b) = MinMax (max a b)
+    mul (MinMax a) (MinMax b) = MinMax (min a b)
+
+instance Expr Mod7 where
+    lit a = Mod7 (a `mod` 7)
+    add (Mod7 a) (Mod7 b) = Mod7 ((a + b) `mod` 7)
+    mul (Mod7 a) (Mod7 b) = Mod7 ((a * b) `mod` 7)
+
+
+testExp :: Expr a => Maybe a
+testExp = parseExp lit add mul "(3 * -4) + 5"
+
+testInteger :: Maybe Integer
+testInteger = testExp :: Maybe Integer
+
+testBool :: Maybe Bool
+testBool = testExp :: Maybe Bool
+
+testMM :: Maybe MinMax
+testMM = testExp :: Maybe MinMax
+
+testSat :: Maybe Mod7
+testSat = testExp :: Maybe Mod7
