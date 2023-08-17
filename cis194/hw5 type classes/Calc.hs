@@ -7,13 +7,14 @@ import ExprT
 import Parser
 import qualified Data.Map as M
 import Data.Maybe (fromJust, isNothing)
+import StackVM (Program, StackExp (PushI, Add, Mul))
 
 -- Ex. 1
 eval :: ExprT -> Integer
 
 eval (Lit x) = x
-eval (Add a b) = eval a + eval b
-eval (Mul a b) = eval a * eval b
+eval (ExprT.Add a b) = eval a + eval b
+eval (ExprT.Mul a b) = eval a * eval b
 
 -- Ex. 2
 evalStr :: String -> Maybe Integer
@@ -27,8 +28,8 @@ class Expr a where
 
 instance Expr ExprT where
     lit = Lit
-    add = Add
-    mul = Mul
+    add = ExprT.Add
+    mul = ExprT.Mul
 
 reify :: ExprT -> ExprT
 reify = id
@@ -110,3 +111,16 @@ withVars :: [(String, Integer)]
             -> Maybe Integer
 withVars vs e = e $ M.fromList vs
 
+
+-- Ex. 5
+instance Expr Program where
+    lit i = [PushI i]
+    add a b = a ++ b ++ [StackVM.Add]
+    mul a b = a ++ b ++ [StackVM.Mul]
+
+compile :: String -> Maybe Program
+compile = parseExp lit add mul
+
+-- Got from a solution, same link as above
+testProg :: Maybe StackVM.Program
+testProg = testExp
