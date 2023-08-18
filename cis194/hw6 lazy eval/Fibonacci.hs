@@ -33,3 +33,16 @@ streamMap f (Cons a b) = Cons (f a) (streamMap f b)
 
 streamFromSeed :: (a -> a) -> a -> Stream a
 streamFromSeed f a = Cons a (streamFromSeed f (f a))
+
+-- Ex. 5
+nats :: Stream Integer
+nats = streamFromSeed (+1) 0
+
+-- These parts (both functions underneath) were taken from solution and 
+-- https://stackoverflow.com/questions/55330709/implementing-the-ruler-function-using-streaminterleave 
+interleaveStreams :: Stream a -> Stream a -> Stream a
+interleaveStreams (Cons a as) b = Cons a (interleaveStreams b as)
+
+ruler :: Stream Integer
+ruler = interleaveStreams (streamRepeat 0 ) (streamMap (+1) ruler)
+
