@@ -144,3 +144,8 @@ modCurLine f = do
   l  <- getCurLine
   nl <- onBuffer numLines
   setCurLine . max 0 . min (nl - 1) $ f l
+
+-- Fix to make code work with new version of GHCI
+instance Applicative (Editor b) where
+    pure = return
+    (<*>) = ap
