@@ -1,4 +1,6 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving, FlexibleInstances #-}
+{-# LANGUAGE UndecidableInstances #-}
+{-# OPTIONS_GHC -Wno-noncanonical-monoid-instances #-}
 module Sized where
 
 import Data.Monoid
@@ -23,6 +25,6 @@ instance Sized Size where
 instance Sized b => Sized (a,b) where
   size = size . snd
 
-instance Monoid Size where
+instance Semigroup Size => Monoid Size where
   mempty  = Size 0
   mappend = (+)

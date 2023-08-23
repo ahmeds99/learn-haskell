@@ -1,3 +1,4 @@
+import Sized
 data JoinList m a = Empty
     | Single m a
     | Append m (JoinList m a) (JoinList m a)
@@ -5,15 +6,42 @@ data JoinList m a = Empty
 
 -- Ex. 1
 (+++) :: Monoid m => JoinList m a -> JoinList m a -> JoinList m a
--- This is a much more simple and clean solution the the first I drafted
 (+++) a b = Append (tag a `mappend` tag b) a b
--- (+++) jl1@(Single m1 _) jl2@(Single m2 _) = Append (tag jl1 `mappend` tag jl2) jl1 jl2
--- (+++) jl1@(Append m1 _ _) jl2@(Single m2 _) = Append (tag jl1 `mappend` tag jl2) jl1 jl2
--- (+++) jl1@(Single m1 _) jl2@(Append m2 _ _) = Append (tag jl1 `mappend` tag jl2) jl1 jl2
--- (+++) jl1@(Append m1 _ _) jl2@(Append m2 _ _) = Append (tag jl1 `mappend` tag jl2) jl1 jl2
-
 
 tag :: Monoid m => JoinList m a -> m
 tag Empty = mempty
 tag (Single m _) = m
 tag (Append m _ _) = m
+
+-- Ex. 2
+-- The part for append is stolen from the solution
+indexJ :: (Sized b, Monoid b) => Int -> JoinList b a -> Maybe a
+indexJ _ Empty = Nothing
+indexJ i (Single _ a) 
+    | i == 0 = Just a
+    | otherwise = Nothing
+indexJ i (Append m a b)
+    | i < 0 || i > size1 = Nothing
+    | i < size1 = indexJ i a
+    | otherwise = indexJ (i - size2) b
+    where size1 = getSize . size $ m
+          size2 = getSize . size . tag  $ b
+
+-- Methods to safe index and test the fast indexing (indexJ)
+(!!?) :: [a] -> Int -> Maybe a
+[] !!? _ = Nothing
+_ !!? i | i < 0 = Nothing
+(x:xs) !!? 0 = Just x
+(x:xs) !!? i = xs !!? (i-1)
+
+jlToList :: JoinList m a -> [a]
+jlToList Empty = []
+jlToList (Single _ a) = [a]
+jlToList (Append _ l1 l2) = jlToList l1 ++ jlToList l2
+
+test = Append (Size 3) 
+        (Append (Size 2) 
+            (Single (Size 1) "hei") 
+            (Single (Size 1) "hade")
+        )
+        (Single (Size 1) "hva")
