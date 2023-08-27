@@ -27,6 +27,19 @@ indexJ i (Append m a b)
     where size1 = getSize . size $ m
           size2 = getSize . size . tag  $ b
 
+dropJ :: (Sized b, Monoid b) =>
+    Int -> JoinList b a -> JoinList b a
+
+dropJ i jl@(Single _ a)
+    | i <= 0 = Empty
+dropJ i jl@(Append m a b)
+    | i < 0 || i > size1 = jl
+    | i < size1 = dropJ i a
+    | otherwise = dropJ (i - size2) b
+    where size1 = getSize . size $ m
+          size2 = getSize . size . tag  $ b
+dropJ _ _ = Empty
+
 -- Methods to safe index and test the fast indexing (indexJ)
 (!!?) :: [a] -> Int -> Maybe a
 [] !!? _ = Nothing
